@@ -13,4 +13,17 @@ const connection = mysql.createConnection({
     database: 'employee_trackerDB',
 });
 
+const start = () => {
+    inquirer.prompt({
+        name: 'userOptions',
+        type: 'list',
+        message: 'What would you like to do?',
+        choices: ['Add department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees'],
+    })
+    .then((answer) => {
+        if (answer.userOptions === 'Add Role') {
+            addDept();
+        }
+})
+};
 
