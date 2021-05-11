@@ -27,3 +27,11 @@ const start = () => {
 })
 };
 
+const addDept = () => {
+    inquirer.prompt({
+        name: 'Department',
+        type: 'input',
+        message: 'What is the name of your department?',
+    })
+    .then()
+}
