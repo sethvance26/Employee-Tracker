@@ -21,7 +21,7 @@ const start = () => {
         choices: ['Add department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees'],
     })
     .then((answer) => {
-        if (answer.userOptions === 'Add Role') {
+        if (answer.userOptions === 'Add Department') {
             addDept();
         }
 })
@@ -35,3 +35,4 @@ const addDept = () => {
     })
     .then()
 }
+
