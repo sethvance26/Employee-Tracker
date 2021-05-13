@@ -83,8 +83,19 @@ const addDept = () => {
     })
     .then((answer) => {
         console.log(answer.newDept);
-        // connection.query(
-        //     'INSERT INTO departments SET ?'
-    })
-}
+        connection.query(
+            'INSERT INTO departments SET ?',
+
+        {
+            dept_name: answer.addDept,
+        
+        },
+        (err) => {
+        if (err) throw err; 
+        console.log('Your department was added succesfully!');
+        start();
+        }
+        );
+    });
+};
        
