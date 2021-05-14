@@ -1,6 +1,6 @@
-const mysql = require('mysql');
-const inquirer = require ('inquirer');
-
+const mysql = require("mysql");
+const inquirer = require ("inquirer");
+const conTable = require("console.table");
 
 
 const connection = mysql.createConnection({
@@ -76,26 +76,48 @@ const start = () => {
 }
 
 const addDept = () => {
-    inquirer.prompt({
-        name: 'newDept',
+    inquirer
+      .prompt({
+        name: 'addDept',
         type: 'input',
-        message: 'What is the new department name?'
+        message: 'What is the name of the Department you would like to add?',
+      })
+      .then((answer) => {
+        // when finished prompting, insert a new item into the db with that info
+        connection.query(
+          'INSERT INTO department SET ?',
+          {
+            dept_name: answer.addDept,
+          },
+          (err) => {
+            if (err) throw err;
+            console.log('Your Department was added successfully!');
+            // re-prompt the user for if they want to bid or post
+            start();
+          }
+        );
+      });
+};
+
+const addRole = () => {
+    inquirer
+    .prompt({
+        name: 'addRole',
+        type: 'input',
+        message: 'Please enter the name of the new Role', 
     })
     .then((answer) => {
-        console.log(answer.newDept);
-        connection.query(
-            'INSERT INTO departments SET ?',
 
-        {
-            dept_name: answer.addDept,
-        
-        },
-        (err) => {
-        if (err) throw err; 
-        console.log('Your department was added succesfully!');
-        start();
-        }
+        connection.query(
+            'INSERT INTO Emp_role SET ?',
+            {
+                title: answer.addRole,
+            },
+            (err) => {
+                if (err) throw err;
+                console.log('New role added!');
+                start();
+            }
         );
     });
 };
-       
