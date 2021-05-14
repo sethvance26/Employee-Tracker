@@ -121,3 +121,26 @@ const addRole = () => {
         );
     });
 };
+
+const addEmp = () => {
+    inquirer
+    .prompt({
+        name: 'addEmp',
+        type: 'input',
+        message: 'Please enter the name of the new Employee', 
+    })
+    .then((answer) => {
+
+        connection.query(
+            'INSERT INTO Emp_role SET ?',
+            {
+                title: answer.addEmp,
+            },
+            (err) => {
+                if (err) throw err;
+                console.log('New employee added!');
+                start();
+            }
+        );
+    });
+};
