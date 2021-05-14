@@ -101,17 +101,30 @@ const addDept = () => {
 
 const addRole = () => {
     inquirer
-    .prompt({
-        name: 'addRole',
+    .prompt([
+        {
+        name: 'title',
         type: 'input',
-        message: 'Please enter the name of the new Role', 
-    })
+        message: 'Please enter the title of the new Role', 
+        },
+        {
+        name: 'salary',
+        type: 'input',
+        message: 'What is the salary for this role?',
+        },
+        {
+        name: 'deptid',
+        type: 'input',
+        message: 'What is the department ID for this role?'
+        }
+    ])
     .then((answer) => {
-
         connection.query(
             'INSERT INTO Emp_role SET ?',
             {
-                title: answer.addRole,
+                title: answer.title,
+                salary: answer.salary,
+                deptid: answer.deptid
             },
             (err) => {
                 if (err) throw err;
@@ -124,17 +137,38 @@ const addRole = () => {
 
 const addEmp = () => {
     inquirer
-    .prompt({
-        name: 'addEmp',
+    .prompt([
+        {
+        name: 'first',
         type: 'input',
-        message: 'Please enter the name of the new Employee', 
-    })
+        message: 'Please enter new Employee first name', 
+        },
+        {
+        name: 'last',
+        type: 'input',
+        message: 'Please enter new Employee last name',
+        },
+        {
+        name: 'roleid',
+        type: 'input',
+        message: 'What is the ID for this employees current role?'
+        },
+        {
+            name: 'manaid',
+            type: 'input',
+            message: 'What is the ID for this employees manager?'
+        }
+    ])
     .then((answer) => {
 
         connection.query(
             'INSERT INTO Emp_role SET ?',
             {
                 title: answer.addEmp,
+                firstName: answer.first,
+                lastName: answer.last,
+                roleId: answer.roleId,
+                managerId: answer.manaid
             },
             (err) => {
                 if (err) throw err;
