@@ -88,7 +88,7 @@ const viewDept = () => {
 });
 }
 
-
+//This is a function to view all employee roles existing in the database.
 const viewRole = () => {
     connection.query('SELECT * FROM Emp_Role', (err, res) => {
         if (err) throw err;
@@ -100,6 +100,18 @@ const viewRole = () => {
 });
 }
 
+//This is a function to view all employees existing in the database.
+const viewEmp = () => {
+    connection.query('SELECT * FROM employee', (err, res) => {
+        if (err) throw err;
+    res.forEach(({ID, firstName, lastName, roleId, managerId }) => {
+        console.log
+        (`${ID} | ${firstName} | ${lastName} | ${roleId} | ${managerId}`);
+    });
+    console.log('-----------------');
+    start();
+});
+}
 
 
 
@@ -120,13 +132,14 @@ const addDept = () => {
           (err) => {
             if (err) throw err;
             console.log('Your Department was added successfully!');
-            // re-prompt the user for if they want to bid or post
+            // re-prompting the user, so they can continue using the app
             start();
           }
         );
       });
 };
 
+//This function is to add a new Role to our database.
 const addRole = () => {
     inquirer
     .prompt([
