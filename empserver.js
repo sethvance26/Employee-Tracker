@@ -75,6 +75,34 @@ const start = () => {
     });
 }
 
+
+//This is a function to view all departments existing in the database.
+const viewDept = () => {
+    connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err;
+    res.forEach(({ID, dept_name}) => {
+        console.log(`${ID} | ${dept_name}`);
+    });
+    console.log('-----------------');
+    start();
+});
+}
+
+
+const viewRole = () => {
+    connection.query('SELECT * FROM Emp_Role', (err, res) => {
+        if (err) throw err;
+    res.forEach(({ID, title, salary, department_id }) => {
+        console.log(`${ID} | ${title} | ${salary} | ${department_id}`);
+    });
+    console.log('-----------------');
+    start();
+});
+}
+
+
+
+
 const addDept = () => {
     inquirer
       .prompt({
