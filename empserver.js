@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require ("inquirer");
+const util = require ("util");
 const conTable = require("console.table");
 
 
@@ -11,9 +12,9 @@ const connection = mysql.createConnection({
     user: 'root',
 
     password: 'Bread#123',
+
     database: 'employee_trackerDB',
 });
-
 
 
 connection.connect((err) => {
@@ -21,6 +22,8 @@ connection.connect((err) => {
     start()
 });
 
+
+const query = util.promisify(connection.query).bind(connection);
 
 const start = () => {
     inquirer.prompt({
@@ -31,9 +34,9 @@ const start = () => {
             'Add Department',
             'Add Role', 
             'Add Employee',
-            'View Departments',
             'View Roles', 
             'View Employees',
+            'Update Employee Role',
             'Nevermind',
         ],
     })
@@ -68,57 +71,107 @@ const start = () => {
             viewEmp();
             break;
 
+            case 'View Employees':
+            update();
+            break;
+
             case 'Nevermind':
                 console.log(`Invalid action: ${answer.userOptions}`);
             break;
         }
     });
-}
+};
 
 
 //This is a function to view all departments existing in the database.
-const viewDept = () => {
-    connection.query('SELECT * FROM department', (err, res) => {
-        if (err) throw err;
-    res.forEach(({ID, dept_name}) => {
-        console.log(`${ID} | ${dept_name}`);
-    });
-    console.log('-----------------');
-    start();
-});
-}
+const viewDept = async () => {
+   
+    const dept_Table = await query(
 
+        `SELECT e.id AS 'Employee ID',
+        e.first_name AS 'First Name',
+        e.last_name AS 'Last Name',
+        department.dept_name AS 'Department',
+        Emp_role.title AS 'Title',
+        Emp_role.salary AS 'Salary',
+    CONCAT(m.first_name, ' ', m.last_name) 
+        AS Manager FROM 
+        employee_trackerdb.employee AS e 
+    INNER JOIN
+        Emp_role ON (e.role_id = emp_role.ID)
+    INNER JOIN
+        department ON (emp_role.dept_id = department.ID)
+    LEFT JOIN
+        employee_trackerdb.employee m ON e.manager_id = m.id
+    ORDER BY
+        department.dept_name;`
 
-
+    );
+   
+    console.table(dept_Table);
+        start();
+    };
 
 //This is a function to view all employee roles existing in the database.
-const viewRole = () => {
-    connection.query('SELECT * FROM Emp_Role', (err, res) => {
-        if (err) throw err;
-    res.forEach(({ID, title, salary, dept_id }) => {
-        console.log(`${ID} | ${title} | ${salary} | ${dept_id}`);
-    });
-    console.log('-----------------');
-    start();
-});
-}
+const viewRole = async () => {
+   
+    const role_Table = await query(
+
+        `SELECT e.id AS 'Employee ID',
+        e.first_name AS 'First Name',
+        e.last_name AS 'Last Name',
+        department.dept_name AS 'Department',
+        Emp_role.title AS 'Title',
+        Emp_role.salary AS 'Salary',
+    CONCAT(m.first_name, ' ', m.last_name) 
+        AS Manager FROM 
+        employee_trackerdb.employee AS e 
+    INNER JOIN
+        Emp_role ON (e.role_id = emp_role.ID)
+    INNER JOIN
+        department ON (emp_role.dept_id = department.ID)
+    LEFT JOIN
+        employee_trackerdb.employee m ON e.manager_id = m.id
+    ORDER BY
+        department.dept_name;`
+
+    );
+   
+    console.table(role_Table);
+        start();
+    };
 
 
 
 
 
 //This is a function to view all employees existing in the database.
-const viewEmp = () => {
-    connection.query('SELECT * FROM employee', (err, res) => {
-        if (err) throw err;
-    res.forEach(({ID, firstName, lastName, roleId, managerId }) => {
-        console.log
-        (`${ID} | ${firstName} | ${lastName} | ${roleId} | ${managerId}`);
-    });
-    console.log('-----------------');
-    start();
-});
-}
+const viewEmp = async () => {
+    const emp_Table = await query(
+
+        `SELECT e.id AS 'Employee ID',
+        e.first_name AS 'First Name',
+        e.last_name AS 'Last Name',
+        department.dept_name AS 'Department',
+        Emp_role.title AS 'Title',
+        Emp_role.salary AS 'Salary',
+    CONCAT(m.first_name, ' ', m.last_name) 
+        AS Manager FROM 
+        employee_trackerdb.employee AS e 
+    INNER JOIN
+        Emp_role ON (e.role_id = emp_role.ID)
+    INNER JOIN
+        department ON (emp_role.dept_id = department.ID)
+    LEFT JOIN
+        employee_trackerdb.employee m ON e.manager_id = m.id
+    ORDER BY
+        department.dept_name;`
+
+    );
+   
+    console.table(emp_Table);
+        start();
+    };
 
 
 
@@ -227,40 +280,42 @@ const addEmp = () => {
     });
 };
 
-// const update = () => {
-//     connection.query(
-//         `SELECT role_id FROM employee`, (err, results) => {
-//             if (err) throw err;
-//     inquirer.prompt({
-//         name: 'RoleList',                                                                                                                
-//         type: 'list',
-//         choices() {
-//             const choiceArray = [];
-//             results.forEach(({ role_id}) => {
-//               choiceArray.push(role_id);
-//             });
-//             return choiceArray;
-//           },
-//           message: 'What employee role would you like to update?',
-//         },
-//         {
-//             name: 'role',
-//             type: 'input',
-//             message: 'What is the name of the new role?',
-//         },
-//         .then((answer) => {
-//             let chosenItem;
-//             results.forEach((item) => {
-//                 if (item.itemname === answer.choice) {
-//                     chosenItem = item;
-//                 }
-//         })
-    
-//         connection.query(
-//             'UPDATE employee SET ? WHERE ?',
-//         [
-//             {
-//                 role_id: chosenItem.id,
-//             },
-//         ],
-//         (error) => {
+
+const update = () => {
+          connection.query("SELECT * FROM employee", (err, res) => {
+            if (err) throw err;
+            res.forEach(({ID, title, salary, dept_id }) => {
+              console.log(`${ID} | ${title} | ${salary} | ${dept_id}`);
+            });
+            console.log('-----------------------------------');
+            inquirer
+              .prompt({
+                name: "emp_list",
+                type: "list",
+                message: "Select the employee whose role you would like to update.",
+                choices() {
+                  const employeeArray = [];
+                  res.forEach(({ first_name, last_name, role_id }) => {
+                    employeeArray.push(first_name + " " + last_name);
+                  });
+                  return employeeArray;
+                },
+              })
+              .then((answer) => {
+                console.log(answer.emp_list + "'s current role ID is" + answer.role_id);
+        console.log(item)
+        connection.query(
+            'UPDATE role_id ON employee',
+            {
+                role_id: chosenItem.id,
+            },
+        (error) => {
+            if (error) throw err;
+            console.log('updated sucessfully'); 
+            start();
+        }
+        );
+    })
+}
+    )};
+
