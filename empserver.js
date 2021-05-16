@@ -88,17 +88,24 @@ const viewDept = () => {
 });
 }
 
+
+
+
 //This is a function to view all employee roles existing in the database.
 const viewRole = () => {
     connection.query('SELECT * FROM Emp_Role', (err, res) => {
         if (err) throw err;
-    res.forEach(({ID, title, salary, department_id }) => {
-        console.log(`${ID} | ${title} | ${salary} | ${department_id}`);
+    res.forEach(({ID, title, salary, dept_id }) => {
+        console.log(`${ID} | ${title} | ${salary} | ${dept_id}`);
     });
     console.log('-----------------');
     start();
 });
 }
+
+
+
+
 
 //This is a function to view all employees existing in the database.
 const viewEmp = () => {
@@ -154,7 +161,7 @@ const addRole = () => {
         message: 'What is the salary for this role?',
         },
         {
-        name: 'deptid',
+        name: 'dept_id',
         type: 'input',
         message: 'What is the department ID for this role?'
         }
@@ -165,7 +172,7 @@ const addRole = () => {
             {
                 title: answer.title,
                 salary: answer.salary,
-                deptid: answer.deptid
+                dept_id: answer.dept_id
             },
             (err) => {
                 if (err) throw err;
@@ -180,24 +187,24 @@ const addEmp = () => {
     inquirer
     .prompt([
         {
-        name: 'first',
-        type: 'input',
-        message: 'Please enter new Employee first name', 
+        name: "firstName",
+        type: "input",
+        message: "Please enter new Employee first name", 
         },
         {
-        name: 'last',
-        type: 'input',
-        message: 'Please enter new Employee last name',
+        name: "lastName",
+        type: "input",
+        message: "Please enter new Employee last name",
         },
         {
-        name: 'roleid',
-        type: 'input',
-        message: 'What is the ID for this employees current role?'
+        name: "roleId",
+        type: "input",
+        message: "What is the ID for this employees current role?"
         },
         {
-            name: 'manaid',
-            type: 'input',
-            message: 'What is the ID for this employees manager?'
+            name: "managerId",
+            type: "input",
+            message: "What is the ID for this employees manager?"
         }
     ])
     .then((answer) => {
@@ -205,11 +212,11 @@ const addEmp = () => {
         connection.query(
             'INSERT INTO Emp_role SET ?',
             {
-                title: answer.addEmp,
-                firstName: answer.first,
-                lastName: answer.last,
-                roleId: answer.roleId,
-                managerId: answer.manaid
+                
+                first_name: answer.firstName,
+                last_name: answer.lastName,
+                role_id: answer.roleId,
+                manager_id: answer.managerId,
             },
             (err) => {
                 if (err) throw err;
@@ -219,3 +226,41 @@ const addEmp = () => {
         );
     });
 };
+
+const update = () => {
+    connection.query(
+        `SELECT role_id FROM employee`, (err, results) => {
+            if (err) throw err;
+    inquirer.prompt({
+        name: 'RoleList',                                                                                                                
+        type: 'list',
+        choices() {
+            const choiceArray = [];
+            results.forEach(({ role_id}) => {
+              choiceArray.push(role_id);
+            });
+            return choiceArray;
+          },
+          message: 'What employee role would you like to update?',
+        },
+        {
+            name: 'role',
+            type: 'input',
+            message: 'What is the name of the new role?',
+        },
+        .then((answer) => {
+            let chosenItem;
+            results.forEach((item) => {
+                if (item.itemname === answer.choice) {
+                    chosenItem = item;
+                }
+        })
+    
+        connection.query(
+            'UPDATE employee SET ? WHERE ?',
+        [
+            {
+                role_id: chosenItem.id,
+            },
+        ],
+        (error) => {
