@@ -227,40 +227,40 @@ const addEmp = () => {
     });
 };
 
-const update = () => {
-    connection.query(
-        `SELECT role_id FROM employee`, (err, results) => {
-            if (err) throw err;
-    inquirer.prompt({
-        name: 'RoleList',                                                                                                                
-        type: 'list',
-        choices() {
-            const choiceArray = [];
-            results.forEach(({ role_id}) => {
-              choiceArray.push(role_id);
-            });
-            return choiceArray;
-          },
-          message: 'What employee role would you like to update?',
-        },
-        {
-            name: 'role',
-            type: 'input',
-            message: 'What is the name of the new role?',
-        },
-        .then((answer) => {
-            let chosenItem;
-            results.forEach((item) => {
-                if (item.itemname === answer.choice) {
-                    chosenItem = item;
-                }
-        })
+// const update = () => {
+//     connection.query(
+//         `SELECT role_id FROM employee`, (err, results) => {
+//             if (err) throw err;
+//     inquirer.prompt({
+//         name: 'RoleList',                                                                                                                
+//         type: 'list',
+//         choices() {
+//             const choiceArray = [];
+//             results.forEach(({ role_id}) => {
+//               choiceArray.push(role_id);
+//             });
+//             return choiceArray;
+//           },
+//           message: 'What employee role would you like to update?',
+//         },
+//         {
+//             name: 'role',
+//             type: 'input',
+//             message: 'What is the name of the new role?',
+//         },
+//         .then((answer) => {
+//             let chosenItem;
+//             results.forEach((item) => {
+//                 if (item.itemname === answer.choice) {
+//                     chosenItem = item;
+//                 }
+//         })
     
-        connection.query(
-            'UPDATE employee SET ? WHERE ?',
-        [
-            {
-                role_id: chosenItem.id,
-            },
-        ],
-        (error) => {
+//         connection.query(
+//             'UPDATE employee SET ? WHERE ?',
+//         [
+//             {
+//                 role_id: chosenItem.id,
+//             },
+//         ],
+//         (error) => {
