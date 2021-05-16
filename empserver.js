@@ -34,9 +34,10 @@ const start = () => {
             'Add Department',
             'Add Role', 
             'Add Employee',
+            'View Departments',
             'View Roles', 
             'View Employees',
-            'Update Employee Role',
+            'Update An Employee Role',
             'Nevermind',
         ],
     })
@@ -55,11 +56,7 @@ const start = () => {
             addEmp();
             break; 
 
-            case 'Update an Employee Role':
-            update();
-            break;
-
-            case 'View All Departments':
+            case 'View Departments':
             viewDept();
             break;
 
@@ -71,12 +68,12 @@ const start = () => {
             viewEmp();
             break;
 
-            case 'View Employees':
+            case 'Update An Employee Role':
             update();
             break;
 
             case 'Nevermind':
-                console.log(`Invalid action: ${answer.userOptions}`);
+                connection.end();
             break;
         }
     });
@@ -282,40 +279,73 @@ const addEmp = () => {
 
 
 const update = () => {
-          connection.query("SELECT * FROM employee", (err, res) => {
-            if (err) throw err;
-            res.forEach(({ID, title, salary, dept_id }) => {
-              console.log(`${ID} | ${title} | ${salary} | ${dept_id}`);
-            });
-            console.log('-----------------------------------');
-            inquirer
-              .prompt({
-                name: "emp_list",
-                type: "list",
-                message: "Select the employee whose role you would like to update.",
-                choices() {
-                  const employeeArray = [];
-                  res.forEach(({ first_name, last_name, role_id }) => {
-                    employeeArray.push(first_name + " " + last_name);
-                  });
-                  return employeeArray;
-                },
-              })
-              .then((answer) => {
-                console.log(answer.emp_list + "'s current role ID is" + answer.role_id);
-        console.log(item)
-        connection.query(
-            'UPDATE role_id ON employee',
-            {
-                role_id: chosenItem.id,
-            },
-        (error) => {
-            if (error) throw err;
-            console.log('updated sucessfully'); 
-            start();
-        }
-        );
-    })
-}
-    )};
+       inquirer.prompt([
+           {
+               name: 'employee',
+               type: 'list',
+               message: 'Which role would you like to update?',
+               choices: () => listEmp(),
+           },
+           {
+               name: 'newTitle',
+               type: 'list',
+               message: 'What is this employees new role?',
+               choices: () => listRoles(),
+           },
+       ])
+       
+       .then(async function (res) {
+           const empArray = res.employee.split(' ');
+           const empFirst = empArray[0];
+           const empLast = empArray[1];
+           const newRole = res.role;
 
+           const updatedRole = await query('SELECT id FROM emp_role WHERE ?', {
+               title: newRole, 
+           });
+        
+        const employeeId = await query(
+            'SELECT id FROM employee WHERE ? AND ?',
+            [{ first_name: empFirst}, {last_name: empLast }]
+        );
+
+        await query('UPDATE employee SET ? WHERE ?', [
+            {
+                role_id: updatedRole[0].ID,
+            },
+            {
+                id: employeeId[0].ID,
+            },
+        ]);
+
+        console.log('Role updated!');
+        start();
+    });
+};
+
+const listEmp = async () => {
+    let employees;
+employees = await query('SELECT * FROM employee'); 
+const employeeName = employees.map((employee) => {
+    return `${employee.first_name} ${employee.last_name}`;
+});
+return employeeName;
+};
+
+const listDept = async () => {
+    let deptArray;
+    deptArray = await query('SELECT * FROM departments');
+    const deptList = deptArray.map((department) => {
+        return `${department.name}`;
+    });
+    return deptList;
+}
+
+const listRoles = async () => {
+    let titleArray;
+    titleArray = await query('SELECT * FROM emp_role');
+    const titleList = titleArray.map((position) => {
+        return `${position.title}`;
+    });
+    return titleList;
+};
