@@ -1,9 +1,10 @@
+//These are our dependencies. 
 const mysql = require("mysql");
 const inquirer = require ("inquirer");
 const util = require ("util");
 const conTable = require("console.table");
 
-
+//This is creating our server connection to port 3306
 const connection = mysql.createConnection({
     host: 'localhost',
 
@@ -16,7 +17,7 @@ const connection = mysql.createConnection({
     database: 'employee_trackerDB',
 });
 
-
+//Connect to server with start function. If there is an error, display that error.
 connection.connect((err) => {
     if (err) throw err;
     start()
@@ -25,6 +26,7 @@ connection.connect((err) => {
 
 const query = util.promisify(connection.query).bind(connection);
 
+//The start function is the initial prompt 
 const start = () => {
     inquirer.prompt({
         name: 'userOptions',
@@ -42,7 +44,7 @@ const start = () => {
         ],
     })
 .then((answer) => {
-        
+        //These are our switch cases for the different options provided to the user. This way, a certain function will run depending on their choice. 
         switch (answer.userOptions) {
             case 'Add Department':
             addDept();
@@ -80,69 +82,34 @@ const start = () => {
 };
 
 
-//This is a function to view all departments existing in the database.
-const viewDept = async () => {
-   
-    const dept_Table = await query(
+//This is a function to view all departments currently existing in the database.
+const viewDept = () => {
+    connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err;
+    res.forEach(({ID, dept_name}) => {
+        console.log(`${ID} | ${dept_name}`);
+    });
+    console.log('-----------------');
+    start();
+});
+}
 
-        `SELECT e.id AS 'Employee ID',
-        e.first_name AS 'First Name',
-        e.last_name AS 'Last Name',
-        department.dept_name AS 'Department',
-        Emp_role.title AS 'Title',
-        Emp_role.salary AS 'Salary',
-    CONCAT(m.first_name, ' ', m.last_name) 
-        AS Manager FROM 
-        employee_trackerdb.employee AS e 
-    INNER JOIN
-        Emp_role ON (e.role_id = emp_role.ID)
-    INNER JOIN
-        department ON (emp_role.dept_id = department.ID)
-    LEFT JOIN
-        employee_trackerdb.employee m ON e.manager_id = m.id
-    ORDER BY
-        department.dept_name;`
 
-    );
-   
-    console.table(dept_Table);
-        start();
-    };
-
-//This is a function to view all employee roles existing in the database.
-const viewRole = async () => {
-   
-    const role_Table = await query(
-
-        `SELECT e.id AS 'Employee ID',
-        e.first_name AS 'First Name',
-        e.last_name AS 'Last Name',
-        department.dept_name AS 'Department',
-        Emp_role.title AS 'Title',
-        Emp_role.salary AS 'Salary',
-    CONCAT(m.first_name, ' ', m.last_name) 
-        AS Manager FROM 
-        employee_trackerdb.employee AS e 
-    INNER JOIN
-        Emp_role ON (e.role_id = emp_role.ID)
-    INNER JOIN
-        department ON (emp_role.dept_id = department.ID)
-    LEFT JOIN
-        employee_trackerdb.employee m ON e.manager_id = m.id
-    ORDER BY
-        department.dept_name;`
-
-    );
-   
-    console.table(role_Table);
-        start();
-    };
+//This is a function to view all employee roles currently existing in the database.
+const viewRole = () => {
+    connection.query('SELECT * FROM Emp_Role', (err, res) => {
+        if (err) throw err;
+    res.forEach(({ID, title, salary, dept_id }) => {
+        console.log(`${ID} | ${title} | ${salary} | ${dept_id}`);
+    });
+    console.log('-----------------');
+    start();
+});
+}
 
 
 
-
-
-//This is a function to view all employees existing in the database.
+//This is a function to view all employees currently existing in the database.
 const viewEmp = async () => {
     const emp_Table = await query(
 
@@ -151,7 +118,6 @@ const viewEmp = async () => {
         e.last_name AS 'Last Name',
         department.dept_name AS 'Department',
         Emp_role.title AS 'Title',
-        Emp_role.salary AS 'Salary',
     CONCAT(m.first_name, ' ', m.last_name) 
         AS Manager FROM 
         employee_trackerdb.employee AS e 
@@ -233,6 +199,7 @@ const addRole = () => {
     });
 };
 
+//This is a function to add a new Employee to our database.
 const addEmp = () => {
     inquirer
     .prompt([
@@ -277,13 +244,14 @@ const addEmp = () => {
     });
 };
 
-
+//This is a function to update an employee's role. 
 const update = () => {
        inquirer.prompt([
+           //First we have our prompts to select which Employee we'd like to update, and then their new Role.
            {
                name: 'employee',
                type: 'list',
-               message: 'Which role would you like to update?',
+               message: 'Which Employee would you like to update?',
                choices: () => listEmp(),
            },
            {
@@ -295,17 +263,17 @@ const update = () => {
        ])
        
        .then(async function (res) {
-           const empArray = res.employee.split(' ');
+           const empArray = res.employee.split(" ");
            const empFirst = empArray[0];
            const empLast = empArray[1];
-           const newRole = res.role;
+           const newRole = res.newTitle;
 
-           const updatedRole = await query('SELECT id FROM emp_role WHERE ?', {
+           const updatedRole = await query('SELECT ID FROM emp_role WHERE ?', {
                title: newRole, 
            });
         
-        const employeeId = await query(
-            'SELECT id FROM employee WHERE ? AND ?',
+        const empID = await query(
+            'SELECT ID FROM employee WHERE ? AND ?',
             [{ first_name: empFirst}, {last_name: empLast }]
         );
 
@@ -314,7 +282,7 @@ const update = () => {
                 role_id: updatedRole[0].ID,
             },
             {
-                id: employeeId[0].ID,
+                id: empID[0].ID,
             },
         ]);
 
@@ -332,14 +300,6 @@ const employeeName = employees.map((employee) => {
 return employeeName;
 };
 
-const listDept = async () => {
-    let deptArray;
-    deptArray = await query('SELECT * FROM departments');
-    const deptList = deptArray.map((department) => {
-        return `${department.name}`;
-    });
-    return deptList;
-}
 
 const listRoles = async () => {
     let titleArray;

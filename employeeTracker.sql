@@ -33,6 +33,8 @@ SELECT * FROM employee;
 INSERT INTO department (dept_name)
 VALUES ("Sales"), ("Marketing"), ("Engineering"), ("Customer Service");
 
+-- Below we're seeding in some data to make the table look a bit nicer.
+
 INSERT INTO Emp_role (title, salary, dept_id)
 VALUES 
 ("Manager", 105000, 1), 

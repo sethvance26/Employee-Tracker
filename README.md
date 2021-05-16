@@ -17,7 +17,7 @@ Employee-Tracker
 - [Questions](#Questions)
 
 ## Description
-Employee Tracker uses MySql to architect and build a solution for managing a potential company's employees using node, inquirer, and mySQL. In simple terms, this application builds a Content Management System, so that non-developers can view and interact with employee information within the database. This way you can add Employees, Departments, and Roles, view the existing ones in the database, and update roles for employee's as well. We were given no starter code this week, so we coded from scratch! 
+Employee Tracker uses MySql to architect and build a solution for managing a potential company's employees using node, inquirer, and mySQL. In simple terms, this application builds a Content Management System, so that non-developers can view and interact with employee information within the database. This way you can add Employees, Departments, and Roles, view the existing ones in the database, and update roles for existing employees' as well. We were given no starter code this week, so everything was coded from scratch! 
 
 ## Contact
 [Email]-(sethvance26@gmail.com)
@@ -27,7 +27,7 @@ Employee Tracker uses MySql to architect and build a solution for managing a pot
 To run a test, use the command N/A, no tests here.
 
 ## Usage
-Make sure you use ' node empserver ' in order to start the application
+Make sure you use ' npm start ' in order to start the application
 https://github.com/sethvance26/Employee-Tracker
 
 
@@ -43,10 +43,10 @@ If you have any questions or concerns, please e-mail me at sethvance26@gmail.com
 
 ## ScreenShots of Completed Assignment ~ ! 
 
-![hw example 2](https://user-images.githubusercontent.com/76290048/118384955-94dce500-b5d8-11eb-97f3-918989d52af0.PNG)
-![hw example 1](https://user-images.githubusercontent.com/76290048/118384958-97d7d580-b5d8-11eb-95cf-fc99d355c034.PNG)
+![coding example](https://user-images.githubusercontent.com/76290048/118386456-8cd77200-b5e5-11eb-82ec-f564cb00c39f.PNG)
+![coding example 2](https://user-images.githubusercontent.com/76290048/118386459-93fe8000-b5e5-11eb-8231-80db4c83e272.PNG)
 
 ### Video
 This week, we were told to submit a link to a video demonstrating our working code! You can find that below!
 
-Video Link - 
+Video Link - https://drive.google.com/file/d/10lopFrnOohjneWHMSBO-3dtR5eKPAqi1/view
