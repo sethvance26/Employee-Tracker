@@ -210,7 +210,7 @@ const addEmp = () => {
     .then((answer) => {
 
         connection.query(
-            'INSERT INTO Emp_role SET ?',
+            'INSERT INTO employee SET ?',
             {
                 
                 first_name: answer.firstName,
